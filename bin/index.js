@@ -84,7 +84,9 @@ function front_tokens(token_list,start,count) {
         sublist = sublist.map( tok => {
             return tok.value
         })
-        return sublist.join(' ')
+        let s = sublist.join(' ')
+        if ( s.length === 0 ) return false
+        return s
     }
     return false
 }
@@ -94,11 +96,43 @@ function front_tokens(token_list,start,count) {
 // PROCESS COMMANDS
 async function process_command(tokens,conf) {
     let com = front_tokens(tokens,0,1)
+    if ( com === false ) return;
     switch (com) {
         case 'mkdir' : {
-            let dir = front_tokens(tokens,1,1)
-            console.log(`mkdir will create a directory tree for ${dir}`)
-            xops.expect_ensure_dir()
+            let remote_dir = front_tokens(tokens,1,1)
+            let known_host = front_tokens(tokens,2,1)
+            console.log(`mkdir will create a directory tree for ${remote_dir}`)
+            let b64pass = Buffer.from(conf.pass).toString('base64')
+            await xops.expect_ensure_dir(b64pass,conf.user,conf.IP,remote_dir,known_host)
+            break
+        }
+        case'ls' : {
+            let remote_dir = front_tokens(tokens,1,1)
+            let known_host = front_tokens(tokens,2,1)
+            console.log(`mkdir will create a directory tree for ${remote_dir}`)
+            let b64pass = Buffer.from(conf.pass).toString('base64')
+            await xops.expect_list_dir(b64pass,conf.user,conf.IP,remote_dir,known_host)
+            break
+        }
+        case 'show' : {
+            let what = front_tokens(tokens,1,1)
+            if ( what ) {
+                switch ( what ) {
+                    case 'conf' : {
+                        console.dir(conf)
+                        break
+                    }
+                    default : {
+                        console.log('unknown ${what}')
+                        break
+                    }
+                }
+            }
+            break
+        }
+        default : {
+            console.log('unknown command ${com}')
+            break
         }
     }
 }
