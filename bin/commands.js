@@ -4,7 +4,19 @@ const xops = require('../lib/exec_ops')
 const {load_config_file,front_tokens,rest_tokens,rest_tokens_array} = require('gift-cli')
 
 
+/**
+ * @typedef Token
+ * @type {object}
+ * @property {string} type - type names returned by js-tokens.
+ * @property {string} value - an island of characters seen in an input string to the parser.
+ */
 
+
+/**
+ * A basic command class for a command line required for use by gift-cli.
+ * 
+ * 
+ */
 class BasicCommands {
 
     constructor() {
@@ -23,6 +35,16 @@ class BasicCommands {
     }
 
 
+    /**
+     * Offers up a set of commands for performing ops on a remote computer.
+     * This command processor has been made for testing xops
+     * 
+     * Commands offered: mdkir, ls, ldr, send, xsend, xget, senddr, xsenddr, getdr, xgetdr
+     * rbash, xbash, bash
+     * 
+     * @param {Token[]} tokens 
+     * @param {object} conf 
+     */
     async process_command(tokens,conf) {
         let com = front_tokens(tokens,0,1)
         if ( com === false ) return;

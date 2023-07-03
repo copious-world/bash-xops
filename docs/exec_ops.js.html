@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: exec_ops.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: exec_ops.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const { execFileSync } = require('node:child_process');
+const {FileOperations} = require('extra-file-class')
+
+let conf = false
+let fos = new FileOperations(conf)
+
+/**
+ * Makes a directory on the remote machine use mkdir -p, where the -p option causes parent directories to be created
+ * @param {string} pass      -- the user password taken from the config and made into base64 (must be passed in base64 format)
+ * @param {string} user      -- the user account on the remote accessed by ssh
+ * @param {string} addr      -- the IP addr of the host
+ * @param {string | boolean} remote_dir -- the target directory
+ * @param {boolean} known_host -- if this is true, then the expect script will respond to ssh fingerprinting
+ */
+async function expect_ensure_dir(pass,user,addr,remote_dir,known_host) {
+    if ( remote_dir === false ) remote_dir = '.'
+    let dir_cmd = `mkdir -p ${remote_dir}`
+    execFileSync('expect',['./assets/expectpw-ssh-cmd.sh', pass, user, addr, dir_cmd, known_host ? 'local' : '' ])
+}
+
+/**
+ * Runs the ls -l command on the remote under the given directory
+ * @param {string} pass      -- the user password taken from the config and made into base64 (must be passed in base64 format)
+ * @param {string} user      -- the user account on the remote accessed by ssh
+ * @param {string} addr      -- the IP addr of the host
+ * @param {string | boolean} remote_dir -- the target directory
+ * @param {boolean} known_host -- if this is true, then the expect script will respond to ssh fingerprinting
+ */
+async function expect_list_dir(pass,user,addr,remote_dir,known_host) {
+    if ( remote_dir === false ) remote_dir = '.'
+    let dir_cmd = `ls -l ${remote_dir}`
+    return execFileSync('expect',['./assets/expectpw-ssh-cmd.sh', pass, user, addr, dir_cmd, known_host ? 'local' : '' ]).toString()
+}
+
+
+/**
+ * Runs the find command to list just the directories under the given directory
+ * @param {string} pass      -- the user password taken from the config and made into base64 (must be passed in base64 format)
+ * @param {string} user      -- the user account on the remote accessed by ssh
+ * @param {string} addr      -- the IP addr of the host
+ * @param {string | boolean} remote_dir -- the target directory
+ * @param {boolean} known_host -- if this is true, then the expect script will respond to ssh fingerprinting
+ */
+async function expect_list_dir_dirs(pass,user,addr,remote_dir,known_host) {
+    let dir_cmd = `find  ${remote_dir} -type d -maxdepth 1`
+    return execFileSync('expect',['./assets/expectpw-ssh-cmd.sh', pass, user, addr, dir_cmd, known_host ? 'local' : '' ]).toString()
+}
+
+
+/**
+ * Uses scp to send a file to the remote. Does not use *expect* and so stops to ask the user for input.
+ * @param {string} user      -- the user account on the remote accessed by ssh
+ * @param {string} addr      -- the IP addr of the host
+ * @param {string} file_to_upload -- the file being uploaded
+ * @param {string | boolean} remote_dir -- the target directory
+ */
+async function send_up(user,addr,file_to_upload,remote_dir) {
+    if ( remote_dir === false ) remote_dir = '.'
+    execFileSync('bash',['./assets/scp-helper.sh', user, addr, file_to_upload, remote_dir])
+}
+
+/**
+ * Uses scp to send a file to the remote. Does not use *expect* and so stops to ask the user for input.
+ * @param {string} pass      -- the user password taken from the config and made into base64 (must be passed in base64 format)
+ * @param {string} user      -- the user account on the remote accessed by ssh
+ * @param {string} addr      -- the IP addr of the host
+ * @param {string} file_to_upload  -- the target file -> local -> remote 
+ * @param {string | boolean} remote_dir -- the target directory
+ * @param {boolean} known_host -- if this is true, then the expect script will respond to ssh fingerprinting
+ */
+async function expect_send_up(pass,user,addr,file_to_upload,remote_dir,known_host) {
+    if ( remote_dir === false ) remote_dir = '.'
+    if ( typeof known_host !== 'string' ) {
+        execFileSync('expect',['./assets/expectpw-scp-helper.sh', pass, user, addr, file_to_upload, remote_dir])
+    } else {
+        execFileSync('expect',['./assets/expectpw-scp-helper.sh', pass, user, addr, file_to_upload, remote_dir, known_host])
+    }   
+}
+
+
+/**
+ * Uses scp to send a file to the remote. Does not use *expect* and so stops to ask the user for input.
+ * @param {string} pass      -- the user password taken from the config and made into base64 (must be passed in base64 format)
+ * @param {string} user      -- the user account on the remote accessed by ssh
+ * @param {string} addr      -- the IP addr of the host
+ * @param {string} file_to_download -- the target file -> remote -> local 
+ * @param {string | boolean} remote_dir -- the target directory
+ * @param {boolean} known_host -- if this is true, then the expect script will respond to ssh fingerprinting
+ */
+async function expect_send_down(pass,user,addr,file_to_download,remote_dir,known_host) {
+    if ( remote_dir === false ) remote_dir = '.'
+    if ( typeof known_host !== 'string' ) {
+        execFileSync('expect',['./assets/expectpw-scp-fetch-helper.sh', pass, user, addr, file_to_download, remote_dir])
+    } else {
+        execFileSync('expect',['./assets/expectpw-scp-fetch-helper.sh', pass, user, addr, file_to_download, remote_dir, known_host])
+    }
+}
+
+/**
+ * Uses scp to send a directory of files to the remote. Does not use *expect* and so stops to ask the user for input.
+ * @param {string} user      -- the user account on the remote accessed by ssh
+ * @param {string} addr      -- the IP addr of the host
+ * @param {string} local_dir  -- the source directory
+ * @param {string} remote_dir -- the target directory
+ */
+async function send_dir_up(user,addr,local_dir,remote_dir) {
+    if ( remote_dir === false ) remote_dir = '.'
+    execFileSync('bash',['./assets/scp-dir-helper.sh', user, addr, local_dir, remote_dir])
+}
+
+/**
+ * Uses scp to send a file to the remote. Does not use *expect* and so stops to ask the user for input.
+ * @param {string} pass      -- the user password taken from the config and made into base64 (must be passed in base64 format)
+ * @param {string} user      -- the user account on the remote accessed by ssh
+ * @param {string} addr      -- the IP addr of the host
+ * @param {string} local_dir -- the target file -> remote -> local 
+ * @param {string | boolean} remote_dir -- the target directory
+ * @param {boolean} known_host -- if this is true, then the expect script will respond to ssh fingerprinting
+ */
+async function expect_send_dir_up(pass,user,addr,local_dir,remote_dir,known_host) {
+    if ( remote_dir === false ) remote_dir = '.'
+    let out = ""
+    if ( typeof known_host !== 'string' ) {
+        out = execFileSync('expect',['./assets/expectpw-scp-dir-helper.sh', pass, user, addr, local_dir, remote_dir])
+    } else {
+        out = execFileSync('expect',['./assets/expectpw-scp-dir-helper.sh', pass, user, addr, local_dir, remote_dir, known_host])
+    }
+    out = out.toString()
+    return out
+}
+
+
+/**
+ * Uses scp to fetch a directory of files from the remote. Does not use *expect* and so stops to ask the user for input.
+ * @param {string} user      -- the user account on the remote accessed by ssh
+ * @param {string} addr      -- the IP addr of the host
+ * @param {string} local_dir  -- the target directoy = receiver
+ * @param {string} remote_dir -- the source directory
+ */
+async function send_dir_down(user,addr,local_dir,remote_dir) {
+    if ( await fos.ensure_directories(`./${local_dir}`) ) {
+        execFileSync('bash',['./assets/scp-dir-fetcher.sh', user, addr, local_dir,remote_dir])
+    } else {
+        console.log("send_dir_down -- cannot make local directory")
+    }
+}
+
+
+/**
+ * Uses scp to send a file to the remote. Does not use *expect* and so stops to ask the user for input.
+ * @param {string} pass      -- the user password taken from the config and made into base64 (must be passed in base64 format)
+ * @param {string} user      -- the user account on the remote accessed by ssh
+ * @param {string} addr      -- the IP addr of the host
+ * @param {string} local_dir -- the target file -> remote -> local 
+ * @param {string | boolean} remote_dir -- the target directory
+ * @param {boolean} known_host -- if this is true, then the expect script will respond to ssh fingerprinting
+ */
+async function expect_send_dir_down(pass,user,addr,local_dir,remote_dir,known_host) {
+    if ( remote_dir === false ) remote_dir = '.'
+    if ( typeof known_host !== 'string' ) {
+        execFileSync('expect',['./assets/expectpw-scp-dir-fetcher.sh', pass, user, addr, local_dir, remote_dir])
+    } else {
+        execFileSync('expect',['./assets/expectpw-scp-dir-fetcher.sh', pass, user, addr, local_dir, remote_dir, known_host])
+    }
+
+}
+
+
+
+/**
+ * Uses scp to fetch a directory of files from the remote. Does not use *expect* and so stops to ask the user for input.
+ * 
+ * The script expects that the file executed remotely will store output in a file named /home/naming/name_run.out
+ * and that that file can be downloaded to the local working directory
+ * 
+ * @param {string} user      -- the user account on the remote accessed by ssh
+ * @param {string} addr      -- the IP addr of the host
+ * @param {string} bash_op   -- the name of a bash script file `*.sh`
+ */
+async function perform_op(user, addr, bash_op) {
+    await execFileSync('bash',['./assets/run-executer.sh', user, addr, bash_op] )   // /home/naming/cluster
+}
+
+
+/**
+ * Runs a bash script on the remote...
+ * 
+ * The script expects that the file executed remotely will store output in a file named /home/naming/name_run.out
+ * and that that file can be downloaded to the local working directory
+ * 
+ * @param {string} pass      -- the user password taken from the config and made into base64 (must be passed in base64 format)
+ * @param {string} user      -- the user account on the remote accessed by ssh
+ * @param {string} addr      -- the IP addr of the host
+ * @param {string} bash_op   -- the name of a bash script file `*.sh`
+ * @param {string} params    -- parameters required by the bash script to run (they would be on the line `bash script.sh p1 p2 p3 p4 ...)
+ * @param {string} known_host -- if this is true, then the expect script will respond to ssh fingerprinting
+ * 
+ */
+async function perform_expect_op(pass, user, addr, bash_op, params, known_host) {
+    if ( known_host === undefined ) known_host = ''
+    let bash_params = [ './assets/expectpw-ssh.sh', pass, user, addr, bash_op, known_host, params ]
+    let out = await execFileSync('expect', bash_params )   // /home/naming/cluster
+    return out.toString()
+}
+
+/**
+ * Runs a bash script on the local machine
+ * @param {string} script -- the name of the bash script file
+ * @param {string[]} params -- an array of parameters as strings
+ * @returns {string} -- the output of the bash script
+ */
+async function run_local_bash_script(script,params) {
+    const util = require('node:util');
+    const execFile = util.promisify(require('node:child_process').execFile);
+    let caller = [script].concat(params)
+    try {
+        let output = await execFile('bash',caller)
+        return output.stdout.toString()    
+    } catch(e) {
+        console.log(e)
+    }
+    return ""
+}
+
+
+module.exports.expect_ensure_dir = expect_ensure_dir
+module.exports.expect_list_dir = expect_list_dir
+module.exports.expect_list_dir_dirs = expect_list_dir_dirs
+module.exports.send_up = send_up
+module.exports.expect_send_up = expect_send_up
+module.exports.expect_send_down = expect_send_down
+module.exports.send_dir_up = send_dir_up
+module.exports.expect_send_dir_up = expect_send_dir_up
+module.exports.send_dir_down = send_dir_down
+module.exports.expect_send_dir_down = expect_send_dir_down
+module.exports.perform_op = perform_op
+module.exports.perform_expect_op = perform_expect_op
+module.exports.run_local_bash_script = run_local_bash_script
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#expect_ensure_dir">expect_ensure_dir</a></li><li><a href="global.html#expect_list_dir">expect_list_dir</a></li><li><a href="global.html#expect_list_dir_dirs">expect_list_dir_dirs</a></li><li><a href="global.html#expect_send_dir_down">expect_send_dir_down</a></li><li><a href="global.html#expect_send_dir_up">expect_send_dir_up</a></li><li><a href="global.html#expect_send_down">expect_send_down</a></li><li><a href="global.html#expect_send_up">expect_send_up</a></li><li><a href="global.html#perform_expect_op">perform_expect_op</a></li><li><a href="global.html#perform_op">perform_op</a></li><li><a href="global.html#run_local_bash_script">run_local_bash_script</a></li><li><a href="global.html#send_dir_down">send_dir_down</a></li><li><a href="global.html#send_dir_up">send_dir_up</a></li><li><a href="global.html#send_up">send_up</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Mon Jul 03 2023 15:33:57 GMT-0700 (Pacific Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
