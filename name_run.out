@@ -1,0 +1,56 @@
+naming PUT run
+/home/naming
+spawn scp root@192.168.1.71:/home/naming/192.168.1.71.json ./cluster/
+The authenticity of host '192.168.1.71 (192.168.1.71)' can't be established.
+ECDSA key fingerprint is SHA256:ZWdM6Xr6pfiphOLSwKMoWk/t2mRhukljrAKpONlX09Y.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Failed to add the host to the list of known hosts (/home/richard/.ssh/known_hosts).
+root@192.168.1.71's password: 
+192.168.1.71.json                               0%    0     0.0KB/s   --:-- ETA>>>>>>192.168.1.71<<<<<<
+spawn scp root@192.168.1.75:/home/naming/192.168.1.75.json ./cluster/
+The authenticity of host '192.168.1.75 (192.168.1.75)' can't be established.
+ECDSA key fingerprint is SHA256:N4zsPoqRrhDWuAAae8BS//6w7Mkul1xvw8vjrpGpOn4.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Failed to add the host to the list of known hosts (/home/richard/.ssh/known_hosts).
+root@192.168.1.75's password: 
+192.168.1.75.json                               0%    0     0.0KB/s   --:-- ETA192.168.1.75.json                             100%  497   310.7KB/s   00:00    
+>>>>>>192.168.1.75<<<<<<
+spawn scp root@192.168.1.77:/home/naming/192.168.1.77.json ./cluster/
+The authenticity of host '192.168.1.77 (192.168.1.77)' can't be established.
+ECDSA key fingerprint is SHA256:tHXTUc15MfXy+17TljJNbiXXtzi71+acHBaMUDD00YQ.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Failed to add the host to the list of known hosts (/home/richard/.ssh/known_hosts).
+root@192.168.1.77's password: 
+192.168.1.77.json                               0%    0     0.0KB/s   --:-- ETA192.168.1.77.json                             100%  503   266.2KB/s   00:00    
+>>>>>>192.168.1.77<<<<<<
+spawn scp root@192.168.1.81:/home/naming/192.168.1.81.json ./cluster/
+The authenticity of host '192.168.1.81 (192.168.1.81)' can't be established.
+ECDSA key fingerprint is SHA256:/YHwPOMu/17CBelevvGqLOpyftmtiKW9D9KsGgxQvk4.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Failed to add the host to the list of known hosts (/home/richard/.ssh/known_hosts).
+root@192.168.1.81's password: 
+192.168.1.81.json                               0%    0     0.0KB/s   --:-- ETA>>>>>>192.168.1.81<<<<<<
+spawn scp richard@76.229.181.242:/home/naming/76.229.181.242.json ./cluster/
+The authenticity of host '76.229.181.242 (76.229.181.242)' can't be established.
+ECDSA key fingerprint is SHA256:GDTZhsNWW39U836zo9sy5wuLWs1zH5D1IpzL38LU+Rw.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Failed to add the host to the list of known hosts (/home/richard/.ssh/known_hosts).
+richard@76.229.181.242's password: 
+76.229.181.242.json                             0%    0     0.0KB/s   --:-- ETA76.229.181.242.json                           100% 2204     3.9MB/s   00:00    
+>>>>>>76.229.181.242<<<<<<
+spawn scp root@155.138.235.197:/home/naming/155.138.235.197.json ./cluster/
+The authenticity of host '155.138.235.197 (155.138.235.197)' can't be established.
+ECDSA key fingerprint is SHA256:lP+GKJ7HgHi2ulw1zcpWzKZXl80i6Zvv6nQOits0bnc.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Failed to add the host to the list of known hosts (/home/richard/.ssh/known_hosts).
+root@155.138.235.197's password: 
+155.138.235.197.json                            0%    0     0.0KB/s   --:-- ETA155.138.235.197.json                          100%  903    15.6KB/s   00:00    
+>>>>>>155.138.235.197<<<<<<
+spawn scp root@45.32.219.78:/home/naming/45.32.219.78.json ./cluster/
+The authenticity of host '45.32.219.78 (45.32.219.78)' can't be established.
+ECDSA key fingerprint is SHA256:z7Fw/UDl+q6pU4zFRxT1MaPJMDPiaweLFHYcv5rb45s.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Failed to add the host to the list of known hosts (/home/richard/.ssh/known_hosts).
+root@45.32.219.78's password: 
+45.32.219.78.json                               0%    0     0.0KB/s   --:-- ETA45.32.219.78.json                             100% 1584    26.8KB/s   00:00    
+>>>>>>45.32.219.78<<<<<<

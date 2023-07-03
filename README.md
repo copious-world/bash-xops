@@ -1,12 +1,12 @@
 # bash-xops
 
-A library for executing bash ops through ssh with expect prior to node.js installation on remotes
+A library for executing `bash` ops through `ssh` with `expect` prior to node.js installation on remotes.
 
 ## rational
 
-Since, node.js will likely not be installed on a new machine instance in some cloud, or personal cloud, it helps to have some bash commands that call upon **expect** to run remote scripts requiring enter user names and passwords. 
+Since, node.js will likely not be installed on a new machine instance in some cloud, or personal cloud, it helps to have some bash commands that call upon **expect** to run remote scripts requiring entering user names and passwords. 
 
-The methods need to send scripts to the remote computers to run, but under the authorization of ssh. The scripts can do things like install node.js, npm, n, git, etc. Once the system is ready to be used, other services can take over and more sophisticated of relaying assets can be employed.
+The methods need to send scripts to the remote computers to run, but under the authorization of ssh. The scripts can do things like install node.js, npm, n, git, etc. Once the system is ready to be used, other services can take over more with sophisticated methods forrelaying assets.
 
 The user will likely use node.js from his own computer. So, this package wraps the bash scripts so that they can be called out of node.js tools the user might create or use.
 
@@ -40,6 +40,8 @@ Where `machine.conf` has the authorization and IP information for a remote host.
 ## exported methods
 
 * `expect_ensure_dir`
+* `expect_list_dir`
+* `expect_list_dir_dirs`
 * `send_up`
 * `expect_send_up`
 * `expect_send_down`

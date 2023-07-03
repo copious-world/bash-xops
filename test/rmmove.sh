@@ -1,0 +1,1 @@
+rm -r big_test_thing/moveme

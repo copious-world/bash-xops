@@ -1,6 +1,6 @@
 {
   "name": "bash-xops",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A library for executing bash ops through ssh with expect prior to node.js installation on remotes",
   "main": "index.js",
   "bin": {
@@ -27,11 +27,16 @@
   ],
   "author": "R. Leddy",
   "license": "GPL-3.0-or-later",
+  "funding": {
+    "type": "GitHub Sponsors",
+    "url": "https://github.com/sponsors/copious-world"
+  },
   "bugs": {
     "url": "https://github.com/copious-world/bash-xops/issues"
   },
   "homepage": "https://github.com/copious-world/bash-xops#readme",
   "dependencies": {
-    "js-tokens": "^8.0.1"
+    "extra-file-class": "^0.9.19",
+    "gift-cli": "^1.0.4"
   }
 }
